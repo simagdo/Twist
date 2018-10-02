@@ -1,0 +1,243 @@
+package de.simagdo.twist.utils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+
+public class TwistText {
+
+    public ArrayList<String> twistText(ArrayList<String> input) {
+        ArrayList<String> output = new ArrayList<>();
+        ArrayList<String> lines = new ArrayList<>();
+        char firstLetter;
+        char lastLetter;
+        String between;
+        ArrayList<Character> shuffle = new ArrayList<>();
+        int start;
+        int end;
+        String result;
+        String line = null;
+
+        for (String meta : input) {
+            String[] parts = meta.split(" ");
+            for (String part : parts) {
+                if (part.length() > 3) {
+                    if ((part.charAt(0) >= 65 && part.charAt(0) <= 90) || (part.charAt(0) >= 141 && part.charAt(0) <= 172)) {
+                        start = 0;
+                        firstLetter = part.charAt(0);
+                    } else {
+                        start = 1;
+                        firstLetter = part.charAt(1);
+                    }
+                    if ((part.charAt(part.length() - 1) >= 65 && part.charAt(part.length() - 1) <= 90) || (part.charAt(part.length() - 1) >= 141 && part.charAt(part.length() - 1) <= 172)) {
+                        end = 0;
+                        lastLetter = part.charAt(part.length());
+                    } else {
+                        end = 1;
+                        lastLetter = part.charAt(part.length() - 1);
+                    }
+
+                    between = part.substring(part.indexOf(firstLetter, 0), part.lastIndexOf(lastLetter));
+
+                    //part = part.replaceAll("[^a-zA-Z]", "");
+                    //firstLetter = part.charAt(start);
+                    //lastLetter = part.charAt(part.length() - 1);
+                    //between = part.substring(start + 1, part.length() - (end - 1));
+                    for (int i = 0; i < between.length(); i++) {
+                        shuffle.add(between.charAt(i));
+                    }
+
+                    //Shuffle the Characters between the First and Last Word
+                    Collections.shuffle(shuffle);
+
+                    //Build the Word
+                    result = String.valueOf(firstLetter);
+                    for (Character character : shuffle) {
+                        result += character;
+                    }
+                    result += String.valueOf(lastLetter);
+
+                    //Clear the Shuffle List
+                    shuffle.clear();
+
+                    //Add the Result to the lines List
+                    lines.add(result);
+
+                    //The Length of the Word is smaller or equal than 3
+                } else {
+                    lines.add(part);
+                }
+            }
+
+            //Initialize the line
+            line = "";
+
+            //Add the lines to the line
+            for (String string : lines) {
+                line += string + " ";
+            }
+
+            //Add the current line to the Output
+            output.add(line);
+
+            //Clear the Lines List
+            lines.clear();
+        }
+
+        return output;
+    }
+
+}
+
+            for (String part : parts) {
+                System.out.println("Part: " + part);
+                if (part.length() > 3) {
+
+                    part = part.replaceAll("[^a-zA-Z]", "");
+                    firstLetter = part.charAt(0);
+                    lastLetter = part.charAt(part.length() - 1);
+                    between = part.substring(1, part.length() - 1);
+                    for (int i = 0; i < between.length(); i++) {
+                        shuffle.add(between.charAt(i));
+                    }
+
+                    //Shuffle the Characters between the First and Last Word
+                    Collections.shuffle(shuffle);
+
+                    //Build the Word
+                    result = String.valueOf(firstLetter);
+                    for (Character character : shuffle) {
+                        result += character;
+                    }
+                    result += String.valueOf(lastLetter);
+
+                    //Clear the Shuffle List
+                    shuffle.clear();
+
+                    //Add the Result to the lines List
+                    lines.add(result);
+
+                    //The Length             for (String part : parts) {
+                System.out.println("Part: " + part);
+                if (part.length() > 3) {
+
+                    part = part.replaceAll("[^a-zA-Z]", "");
+                    firstLetter = part.charAt(0);
+                    lastLetter = part.charAt(part.length() - 1);
+                    between = part.substring(1, part.length() - 1);
+                    for (int i = 0; i < between.length(); i++) {
+                        shuffle.add(between.charAt(i));
+                    }
+
+                    //Shuffle the Characters between the First and Last Word
+                    Collections.shuffle(shuffle);
+
+                    //Build the Word
+                    result = String.valueOf(firstLetter);
+                    for (Character character : shuffle) {
+                        result += character;
+                    }
+                    result += String.valueOf(lastLetter);
+
+                    //Clear the Shuffle List
+                    shuffle.clear();
+
+                    //Add the Result to the lines List
+                    lines.add(result);
+
+                    //The Length of the Word is smaller or equal than 3
+                } else {
+                    lines.add(part);
+                }
+            }of the Word is smaller or equal than 3
+                } else {
+                    lines.add(part);
+                }
+            }
+
+    public ArrayList<String> twistText(ArrayList<String> input) {
+        ArrayList<String> output = new ArrayList<>();
+        ArrayList<String> lines = new ArrayList<>();
+        char firstLetter;
+        char lastLetter;
+        String between;
+        ArrayList<Character> shuffle = new ArrayList<>();
+        int start;
+        int end;
+        String result;
+        String line = null;
+
+        for (String meta : input) {
+            //String[] parts = meta.split("[^\\W],[\\d],[\\s]");
+            //String[] parts = meta.split("[^\\w]");
+            String[] parts = meta.split(" ");
+            for (String part : parts) {
+                if (part.length() > 3) {
+                    if (!part.matches(".*\\d+.*")) {
+                        if (checkASCII(part, 0, ASCII_SMALL_FROM, ASCII_SMALL_TO) || checkASCII(part, 0, ASCII_BIG_FROM, ASCII_BIG_TO)) {
+                            firstLetter = part.charAt(0);
+                            start = 1;
+                        } else {
+                            firstLetter = part.charAt(1);
+                            start = 2;
+                        }
+
+                        if (checkASCII(part, part.length() - 1, ASCII_SMALL_FROM, ASCII_SMALL_TO) || checkASCII(part, part.length() - 1, ASCII_BIG_FROM, ASCII_BIG_TO)) {
+                            lastLetter = part.charAt(part.length() - 1);
+                            end = part.length();
+                        } else {
+                            lastLetter = part.charAt(part.length() - 2);
+                            end = part.length() - 2;
+                        }
+
+                        between = part.substring(start, end);
+
+                        System.out.print(firstLetter + " " + between + " " + lastLetter + " ");
+
+                        for (int i = 0; i < between.length(); i++) {
+                            shuffle.add(between.charAt(i));
+                        }
+
+                        //Shuffle the Characters between the First and Last Word
+                        Collections.shuffle(shuffle);
+
+                        //Build the Word
+                        result = String.valueOf(firstLetter);
+                        for (Character character : shuffle) {
+                            result += character;
+                        }
+                        result += String.valueOf(lastLetter);
+
+                        //Clear the Shuffle List
+                        shuffle.clear();
+
+                        //Add the Result to the lines List
+                        lines.add(result);
+                    } else {
+                        lines.add(part);
+                    }
+                    //The Length of the Word is smaller or equal than 3
+                } else {
+                    lines.add(part);
+                }
+            }
+
+            System.out.println();
+
+            //Initialize the line
+            line = "";
+
+            //Add the lines to the line
+            for (String string : lines) {
+                line += string + " ";
+            }
+
+            //Add the current line to the Output
+            output.add(line);
+
+            //Clear the Lines List
+            lines.clear();
+        }
+
+        return output;
+    }
