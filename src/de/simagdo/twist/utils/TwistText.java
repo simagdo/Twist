@@ -5,6 +5,7 @@ import de.simagdo.twist.objects.TextMatch;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class TwistText {
 
@@ -115,7 +116,7 @@ public class TwistText {
         String line;
         TextMatch textMatch = new TextMatch("", "", "", "", "", "");
         ArrayList<PossibleTwists> possibleTwists = new ArrayList<>();
-        ArrayList<String> result = readFile.getPossibleTwists();
+        List<String> result = readFile.getPossibleTwists();
 
         //Loop over the Input List
         for (String meta : input) {
@@ -202,7 +203,7 @@ public class TwistText {
 
     private String printPermutationsIterative(String first, String string, String last) {
         ReadFile readFile = new ReadFile();
-        ArrayList<String> possibleTwists = readFile.getPossibleTwists();
+        List<String> possibleTwists = readFile.getPossibleTwists();
         String result = "";
         int[] factorials = new int[string.length() + 1];
         factorials[0] = 1;

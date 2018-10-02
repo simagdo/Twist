@@ -1,133 +1,20 @@
 package de.simagdo.twist.utils;
 
-import org.jdom2.Content;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
-
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ReadFile {
 
-    public final static File POSSIBLE_TWISTS = new File("possibleTwists.txt");
-
-    public void createXML(String text) {
-
-        Element root = new Element("Twists");
-
-        Document document = new Document(root);
-
-        Element twist = new Element(text);
-
-        //twist.setAttribute(new Attribute("Twist", text));
-        twist.addContent(new Element("combination", "Tiwst"));
-
-        document.getRootElement().addContent(twist);
-
-        saveXML(document);
-
-    }
-
-    public void checkIfExits(String text, String twist) {
-        SAXBuilder saxBuilder = new SAXBuilder();
-        try {
-            Document document = saxBuilder.build(new FileReader("possibleTwists.xml"));
-            Element root = document.getRootElement();
-
-            if (!text.contains("'") || !twist.contains("'")) {
-
-                Element element = root.getChild(text);
-                if (element != null) {
-                    System.out.println(element.toString());
-                    addCombination(element, text, twist);
-                } else {
-                    System.out.println("Element not exists");
-                    addTwist(text, twist);
-                }
-            }
-        } catch (JDOMException | IOException e) {
-            System.err.println("Error: " + e);
-        }
-    }
+    private final static File POSSIBLE_TWISTS = new File("possibleTwists.txt");
 
     /**
-     * Add a Twist to the XML File
+     * Read the lines from the File and save it in an {@link ArrayList}
      *
-     * @param text  which contains the original Text
-     * @param twist which contains the Twist
+     * @param file which will be read
+     * @return the content of the File
      */
-    public void addTwist(String text, String twist) {
-        SAXBuilder saxBuilder = new SAXBuilder();
-
-        try {
-            Document document = saxBuilder.build(new FileReader("possibleTwists.xml"));
-            Element root = document.getRootElement();
-
-            Element twistElement = new Element(text);
-            //twistElement.setAttribute(new Attribute(text, text));
-            twistElement.addContent(new Element("combination", twist));
-            root.addContent(twistElement);
-
-            saveXML(document);
-        } catch (JDOMException | IOException e) {
-            System.err.println("Error: " + e);
-        }
-    }
-
-    /**
-     * Add a combination to the Text
-     *
-     * @param text  where the combination will be added
-     * @param twist which contains the combination
-     */
-    public void addCombination(Element element, String text, String twist) {
-        SAXBuilder saxBuilder = new SAXBuilder();
-        try {
-            Document document = saxBuilder.build(new FileReader("possibleTwists.xml"));
-            Element root = document.getRootElement();
-
-            Element twistElement = root.getChild(text);
-            System.out.println("Twist: " + twistElement.getQualifiedName());
-            twistElement.getContent().forEach(System.out::println);
-
-            Iterator<Content> iterator = twistElement.getContent().iterator();
-
-            Element content = twistElement.getChild(twist);
-            if (content == null) {
-                twistElement.addContent(new Element("combination", twist));
-            }
-
-            /*for (Element test : elements) {
-                if (!test.getValue().equalsIgnoreCase(twist)) {
-                    twistElement.addContent(new Element("combination", twist));
-                }
-            }*/
-
-            //root.getChildren(element.getQualifiedName()).set(0, twistElement);
-
-            saveXML(document);
-        } catch (JDOMException | IOException e) {
-            System.err.println("Error: " + e);
-        }
-    }
-
-    private void saveXML(Document document) {
-        try {
-            XMLOutputter outputter = new XMLOutputter();
-            //outputter.output(document, System.out);
-
-            outputter.setFormat(Format.getPrettyFormat());
-            outputter.output(document, new FileWriter("possibleTwists.xml"));
-        } catch (IOException e) {
-            System.err.println("Error: " + e);
-        }
-    }
-
     public ArrayList<String> readFile(File file) {
 
         ArrayList<String> data = new ArrayList<>();
@@ -147,40 +34,55 @@ public class ReadFile {
         return data;
     }
 
-    public ArrayList<String> getPossibleTwists() {
-        ArrayList<String> possibleTwists = new ArrayList<>();
-        ArrayList<String> input = readFile(POSSIBLE_TWISTS);
-
-        possibleTwists.addAll(input);
-
-        return possibleTwists;
+    /**
+     * Get all lines from the Text File in a @{@link List}. <br>
+     * Also, it removes duplicates from the List so the Algorithm is faster <br>
+     * because there are less combinations than with duplicates
+     *
+     * @return the Data from the @{@link List}
+     */
+    public List<String> getPossibleTwists() {
+        return readFile(POSSIBLE_TWISTS).stream().distinct().collect(Collectors.toList());
     }
 
-    public void addLines(ArrayList<String> possibleTwists) {
-        ArrayList<String> input = readFile(POSSIBLE_TWISTS);
-        boolean firstRun = true;
+    /**
+     * Add all occurrences from the twisting to the File.
+     *
+     * @param combinations which were found while twisting
+     */
+    public void addLines(ArrayList<String> combinations) {
+
         try {
+
+            //Create a BufferedWriter which will write the occurrences to the Text File
             BufferedWriter writer = new BufferedWriter(new FileWriter(POSSIBLE_TWISTS, true));
 
-            for (String possibleTwist : possibleTwists) {
-                if (input.size() == 0 && firstRun) {
-                    writer.append(possibleTwist);
-                    firstRun = false;
-                } else {
-                    writer.append("\n").append(possibleTwist);
-                }
+            //Append each to occurrence to the BufferedWriter
+            for (String combination : combinations) {
+                writer.append("\n").append(combination);
             }
 
+            //Close the BufferedWriter after each occurrence has been added to it
             writer.close();
         } catch (IOException e) {
             System.err.println("Error: " + e);
         }
     }
 
-    public void addLine(String text, String twist) {
+    /**
+     * Add an occurrence to the twisting File
+     *
+     * @param text which will be added
+     */
+    public void addLine(String text) {
         try {
+            //Create a BufferedWriter which will write the occurrences to the Text File
             BufferedWriter writer = new BufferedWriter(new FileWriter(POSSIBLE_TWISTS, true));
-            writer.append("\n").append(text).append(" ").append(twist);
+
+            //Append the Text to the BufferedWriter
+            writer.append("\n").append(text);
+
+            //Close the BufferedWriter after the Text has been added to it
             writer.close();
         } catch (IOException e) {
             System.err.println("Error: " + e);

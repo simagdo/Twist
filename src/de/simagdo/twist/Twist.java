@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Twist {
 
-    public static ArrayList<String> possibleTwists = new ArrayList<>();
+    private static ArrayList<String> possibleTwists = new ArrayList<>();
     private static String input;
     private static int n;
     private static char first;
@@ -25,7 +25,7 @@ public class Twist {
 
     public static void main(String[] args) {
         TwistGUI twistGUI = new TwistGUI();
-        //twistGUI.init();
+        twistGUI.init();
         /*ReadFile readFile = new ReadFile();
         ArrayList<PossibleTwists> possibleTwists = readFile.getPossibleTwists();
 
@@ -36,11 +36,11 @@ public class Twist {
         //possibleTwists.forEach(System.out::println);
 
         ArrayList<String> list = new ArrayList<>();
-        list = new TwistText().endTwist(new ReadFile().readFile(new File("enttwist.txt")));
+        //list = new TwistText().endTwist(new ReadFile().readFile(new File("enttwist.txt")));
         //ArrayList<String> text = new ArrayList<>();
         //text.add("(tiswt)");
         //list = new TwistText().endTwist(text);
-        list.stream().forEach(System.out::println);
+        //list.stream().forEach(System.out::println);
 
         /*ReadFile readFile = new ReadFile();
 
@@ -90,7 +90,7 @@ public class Twist {
     }
 
     // Recursive function to generate all permutations of a String
-    public static String permutations(char[] ch, int currentIndex) {
+    private static String permutations(char[] ch, int currentIndex) {
         String output = "";
 
         if (possibleTwists.contains(String.valueOf(ch))) {
