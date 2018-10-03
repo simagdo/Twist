@@ -48,9 +48,9 @@ public class ReadFile {
     /**
      * Add all occurrences from the twisting to the File.
      *
-     * @param combinations which were found while twisting
+     * @param occurrences which were found while twisting
      */
-    public void addLines(ArrayList<String> combinations) {
+    public void addLines(ArrayList<String> occurrences) {
 
         try {
 
@@ -58,7 +58,7 @@ public class ReadFile {
             BufferedWriter writer = new BufferedWriter(new FileWriter(POSSIBLE_TWISTS, true));
 
             //Append each to occurrence to the BufferedWriter
-            for (String combination : combinations) {
+            for (String combination : occurrences) {
                 writer.append("\n").append(combination);
             }
 
@@ -72,15 +72,15 @@ public class ReadFile {
     /**
      * Add an occurrence to the twisting File
      *
-     * @param text which will be added
+     * @param occurrence which will be added
      */
-    public void addLine(String text) {
+    public void addLine(String occurrence) {
         try {
             //Create a BufferedWriter which will write the occurrences to the Text File
             BufferedWriter writer = new BufferedWriter(new FileWriter(POSSIBLE_TWISTS, true));
 
             //Append the Text to the BufferedWriter
-            writer.append("\n").append(text);
+            writer.append("\n").append(occurrence);
 
             //Close the BufferedWriter after the Text has been added to it
             writer.close();

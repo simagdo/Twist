@@ -1,6 +1,7 @@
 package de.simagdo.twist.GUI;
 
 import de.simagdo.twist.utils.ReadFile;
+import de.simagdo.twist.utils.TwistMode;
 import de.simagdo.twist.utils.TwistText;
 
 import javax.swing.*;
@@ -127,8 +128,6 @@ public class TwistGUI extends JFrame implements ActionListener {
         //textArea.setAutoscrolls(true);
         textArea.setRows(150);
 
-        panel.add(new JScrollPane(textArea));
-
         return textArea;
     }
 
@@ -218,13 +217,19 @@ public class TwistGUI extends JFrame implements ActionListener {
 
                 //Check if the List is empty
                 if (data.size() == 0) {
-                    JOptionPane.showMessageDialog(null, "Bitte wählen Sie zuerst eine Datei aus!");
+                    if (inputArea.getText().length() != 0) {
+                        System.out.println(inputArea.getText());
+                        data.add(inputArea.getText());
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Bitte wählen Sie zuerst eine Datei aus!");
+                    }
                 } else {
                     //Clear the output Area
                     outputArea.setText("");
 
                     //Twist the Text with the Data from the InputArea
-                    output = twistText.twist(data);
+                    //output = twistText.twist(data);
+                    output = twistText.twist(data, TwistMode.TWIST);
 
                     //Output the twisted Text in the OutputArea
                     for (String current : output) {
@@ -239,7 +244,8 @@ public class TwistGUI extends JFrame implements ActionListener {
                 inputArea.setText("");
 
                 //Endtwist the Text with the Data from the OutputArea
-                output = twistText.endTwist(data);
+                //output = twistText.endTwist(data);
+                output = twistText.twist(data, TwistMode.ENDTWIST);
 
                 //Output the endtwisted Text in the InputArea
                 for (String current : output) {
