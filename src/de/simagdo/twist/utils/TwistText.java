@@ -5,23 +5,31 @@ import de.simagdo.twist.objects.TextMatch;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TwistText {
 
     private ReadFile readFile = new ReadFile();
 
+    /**
+     * Twist or untwist the given Text
+     *
+     * @param input which gets twisted or untwisted
+     * @param mode  which way the Text twisted <br>
+     *              TWIST - Text gets twisted <br>
+     *              ENDTWIST - Text gets untwisted
+     * @return the Text based on the mode
+     */
     public ArrayList<String> twist(ArrayList<String> input, TwistMode mode) {
         ArrayList<String> output = new ArrayList<>();
         ArrayList<TextMatch> textMatches = new ArrayList<>();
-        ArrayList<Character> shuffle = new ArrayList<>();
+        List<Character> shuffle;
         String line;
-        TextMatch textMatch = new TextMatch("", "", "", "", "", "");
+        TextMatch textMatch;
         ArrayList<String> occurrences = new ArrayList<>();
 
         //Loop over the Input List
         for (String meta : input) {
-
-            System.out.println("Meta: " + meta);
 
             //Split the current line at Space
             String[] parts = meta.split(" ");
@@ -29,63 +37,38 @@ public class TwistText {
             //Loop over all parts separately
             for (String part : parts) {
 
-                line = "";
+                //Prepare the Text
+                textMatch = prepareText(part);
 
-                System.out.println("Part: " + part);
+                //Set the origin text
+                textMatch.setOriginalText(textMatch.getFirstLetter() + textMatch.getBetween() + textMatch.getLastLetter());
 
-                if (part.length() > 3) {
+                //Set the between Part
+                textMatch.setBetween(part.substring((textMatch.getFirstDigits().length() + textMatch.getFirstLetter().length()), (part.length() - (textMatch.getLastLetter().length() + textMatch.getLastDigits().length()))));
 
-                    for (int i = 0; i < part.length(); i++) {
-                        if (!Character.isAlphabetic(part.charAt(i)) && textMatch.getFirstLetter().equals("")) {
-                            textMatch.setFirstDigits(textMatch.getFirstDigits() + String.valueOf(part.charAt(i)));
-                        }
+                //Check which mode is currently active
+                if (mode.equals(TwistMode.TWIST) && part.length() > 3) {
 
-                        if (Character.isAlphabetic(part.charAt(i)) && textMatch.getFirstLetter().equals("")) {
-                            textMatch.setFirstLetter(String.valueOf(part.charAt(i)));
-                        }
+                    //Append each Character to the shuffle List
+                    shuffle = textMatch.getBetween().chars().mapToObj(c -> (char) c).collect(Collectors.toList());
 
-                        if (Character.isAlphabetic(part.charAt(i)) && !textMatch.getFirstLetter().equals("")) {
-                            textMatch.setLastLetter(String.valueOf(part.charAt(i)));
-                        }
+                    //Shuffle the Characters between the First and Last Word
+                    Collections.shuffle(shuffle);
 
-                        if (!Character.isAlphabetic(part.charAt(i)) && !textMatch.getLastLetter().equals("")) {
-                            textMatch.setLastDigits(textMatch.getLastDigits() + String.valueOf(part.charAt(i)));
-                        }
+                    //Create the Twist based on the shuffle List
+                    line = shuffle.stream().map(String::valueOf).collect(Collectors.joining());
 
-                    }
+                    //Clear the Shuffle List
+                    shuffle.clear();
 
-                    textMatch.setBetween(part.substring((textMatch.getFirstDigits().length() + textMatch.getFirstLetter().length()), (part.length() - (textMatch.getLastLetter().length() + textMatch.getLastDigits().length()))));
+                    textMatch.setBetween(line);
 
-                    if (mode.equals(TwistMode.TWIST)) {
-                        for (int i = 0; i < textMatch.getBetween().length(); i++) {
-                            shuffle.add(textMatch.getBetween().charAt(i));
-                        }
+                    //Save the Twist in the XML File
+                    occurrences.add(textMatch.getOriginalText());
 
-                        //Set the origin text
-                        textMatch.setOriginalText(textMatch.getFirstLetter() + textMatch.getBetween() + textMatch.getLastLetter());
-
-                        //Shuffle the Characters between the First and Last Word
-                        Collections.shuffle(shuffle);
-
-                        for (Character character : shuffle) line += character;
-
-                        shuffle.clear();
-
-                        textMatch.setBetween(line);
-
-                        //Save the Twist in the XML File
-                        occurrences.add(textMatch.getOriginalText());
-
-                    }
-
-                } else {
-                    textMatch.setBetween(part);
                 }
 
-                System.out.println(textMatch.toString());
-
                 textMatches.add(textMatch);
-                textMatch = new TextMatch("", "", "", "", "", "");
 
             }
 
@@ -110,7 +93,6 @@ public class TwistText {
             output.add(line);
 
             textMatches.clear();
-            textMatch = new TextMatch("", "", "", "", "");
 
         }
 
@@ -120,6 +102,16 @@ public class TwistText {
         return output;
     }
 
+    /**
+     * Create all possible combinations from the Text <br>
+     * To create a better algorithm the first and last character are ignored <br>
+     * because they are always the same
+     *
+     * @param first  of the word
+     * @param string from which all the possibilities are generated
+     * @param last   of the word
+     * @return the original word
+     */
     private String printPermutationsIterative(String first, String string, String last) {
         ReadFile readFile = new ReadFile();
         List<String> possibleTwists = readFile.getPossibleTwists();
@@ -141,14 +133,54 @@ public class TwistText {
                 temp = temp.substring(0, selected) + temp.substring(selected + 1);
             }
 
+            /*
+              Check if the Result List contains the current combination <br>
+              If so the current Loop gets cancelled and the current combination will be returned
+             */
             if (possibleTwists.contains(first + onePermutation + last)) {
-                //System.out.println("===================" + first + onePermutation + last + "===================");
                 result = first + onePermutation + last;
                 break;
             }
-            //System.out.println(onePermutation);
         }
         return result;
+    }
+
+    /**
+     * Prepare the current part
+     *
+     * @param part which gets prepared
+     * @return @{@link TextMatch} which contains structure of the text
+     */
+    private TextMatch prepareText(String part) {
+        //Create a new TextMatch object
+        TextMatch textMatch = new TextMatch("", "", "", "", "");
+
+        //Check if the length is greater than 3
+        if (part.length() > 3) {
+            for (int i = 0; i < part.length(); i++) {
+
+                //Set the Digits which are located before the word
+                if (!Character.isAlphabetic(part.charAt(i)) && textMatch.getFirstLetter().equals(""))
+                    textMatch.setFirstDigits(textMatch.getFirstDigits() + String.valueOf(part.charAt(i)));
+
+                //Set the first letter of the word
+                if (Character.isAlphabetic(part.charAt(i)) && textMatch.getFirstLetter().equals(""))
+                    textMatch.setFirstLetter(String.valueOf(part.charAt(i)));
+
+                //Set the last letter of the word
+                if (Character.isAlphabetic(part.charAt(i)) && !textMatch.getFirstLetter().equals(""))
+                    textMatch.setLastLetter(String.valueOf(part.charAt(i)));
+
+                //Set the Digits which are located after the word
+                if (!Character.isAlphabetic(part.charAt(i)) && !textMatch.getLastLetter().equals(""))
+                    textMatch.setLastDigits(textMatch.getLastDigits() + String.valueOf(part.charAt(i)));
+
+            }
+        } else {
+            textMatch.setBetween(part);
+        }
+
+        return textMatch;
     }
 
 }

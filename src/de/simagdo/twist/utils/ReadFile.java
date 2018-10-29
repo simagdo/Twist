@@ -52,6 +52,9 @@ public class ReadFile {
      */
     public void addLines(ArrayList<String> occurrences) {
 
+        //Get the Input of the File
+        ArrayList<String> input = readFile(POSSIBLE_TWISTS);
+
         try {
 
             //Create a BufferedWriter which will write the occurrences to the Text File
@@ -59,7 +62,9 @@ public class ReadFile {
 
             //Append each to occurrence to the BufferedWriter
             for (String combination : occurrences) {
-                writer.append("\n").append(combination);
+                //Check if the combination already exists in the File -> if not it will be added
+                if (!input.contains(combination))
+                    writer.append("\n").append(combination);
             }
 
             //Close the BufferedWriter after each occurrence has been added to it
@@ -75,12 +80,19 @@ public class ReadFile {
      * @param occurrence which will be added
      */
     public void addLine(String occurrence) {
+
+        //Get the Input of the File
+        ArrayList<String> input = readFile(POSSIBLE_TWISTS);
+
         try {
             //Create a BufferedWriter which will write the occurrences to the Text File
             BufferedWriter writer = new BufferedWriter(new FileWriter(POSSIBLE_TWISTS, true));
 
-            //Append the Text to the BufferedWriter
-            writer.append("\n").append(occurrence);
+            //Check if the combination already exists in the File -> if not it will be added
+            if (!input.contains(occurrence)) {
+                //Append the Text to the BufferedWriter
+                writer.append("\n").append(occurrence);
+            }
 
             //Close the BufferedWriter after the Text has been added to it
             writer.close();
