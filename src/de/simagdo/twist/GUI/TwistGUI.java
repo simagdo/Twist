@@ -16,8 +16,10 @@ public class TwistGUI extends JFrame implements ActionListener {
     /**
      * Here are some local Variables used for the GUI
      */
-    private JLabel label = new JLabel();
-    private JPanel panel = new JPanel();
+    private JPanel mainPanel = new JPanel();
+    private JPanel leftPanel = new JPanel();
+    private JPanel middlePanel = new JPanel();
+    private JPanel rightPanel = new JPanel();
     private JMenuBar fileMenuBar = new JMenuBar();
     private JMenu fileMenu = new JMenu();
     private JTextArea inputArea = new JTextArea();
@@ -25,26 +27,19 @@ public class TwistGUI extends JFrame implements ActionListener {
     private ArrayList<String> data = new ArrayList<>();
     private ReadFile readFile = new ReadFile();
     private TwistText twistText = new TwistText();
+    private JScrollPane scrollPaneLeft;
+    private JScrollPane scrollPaneRight;
 
     public void init() {
 
         //Set the Title GUI
-        this.setTitle("Aufgabe 2 - Twist");
+        this.setTitle("Twist");
 
         //Set the Size of the GUI
         this.setSize(1200, 600);
 
         //Set the position of  the GUI
         this.setLocation(400, 400);
-
-        //Reset the Layout of the Panel
-        panel.setLayout(null);
-
-        //Set the Size of the Panel
-        panel.setSize(1200, 600);
-
-        //Add the Panel to the GUI
-        this.add(panel);
 
         //Create the Menu
         fileMenu = new JMenu("Datei");
@@ -53,43 +48,59 @@ public class TwistGUI extends JFrame implements ActionListener {
         fileMenuBar.add(fileMenu);
 
         //Add the Open Item to the Menu
-        fileMenu.add(addMenuItem("Datei öffnen", "open"));
+        fileMenu.add(addMenuItem("Datei öffnen", "open", 'O'));
 
         //Add the Close Item to the Menu
-        fileMenu.add(addMenuItem("Schließen", "close"));
+        fileMenu.add(addMenuItem("Schließen", "close", 'E'));
 
         //Set the MenuBar of the GUI
         this.setJMenuBar(fileMenuBar);
 
-        //Create a Label
-        label.setText("Twist");
-        label.setSize(100, 30);
-        label.setLocation(575, 10);
-        label.setFont(new Font("Arial", Font.PLAIN, 20));
-        panel.add(label);
+        //Set the Layout of the main Panel
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
 
-        //Create the InputArea which contains the Text to twist
-        inputArea = createTextArea(475, 500, 15, 35);
-        panel.add(inputArea);
+        middlePanel.setLayout(new BoxLayout(middlePanel, BoxLayout.Y_AXIS));
+
+        //Set the Alignment of the Column Panels
+        leftPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        //middlePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        middlePanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+        rightPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+
+        //Set the Border of the left and the right Panel
+        leftPanel.setBorder(BorderFactory.createTitledBorder("Eingabe"));
+        rightPanel.setBorder(BorderFactory.createTitledBorder("Ausgabe"));
+
+        //Set the Size of the left and the right Panel
+        leftPanel.setSize((this.getWidth() / 3), this.getHeight());
+        rightPanel.setSize((this.getWidth() / 3), this.getHeight());
 
         //Create the InputArea which contains the Text to detwist
-        outputArea = createTextArea(475, 500, 700, 35);
-        panel.add(outputArea);
-
-        //Add the Input Label
-        panel.add(createLabel("Eingabe", 100, 30, 15, 5));
-
-        //Add the Output Label
-        panel.add(createLabel("Ausgabe", 100, 30, 700, 5));
+        inputArea = createTextArea(475, 500, 50, 35);
+        scrollPaneLeft = new JScrollPane(inputArea);
+        leftPanel.add(scrollPaneLeft);
 
         //Add the Twist Button
-        panel.add(createButton("Twist", "twist", 125, 30, 540, 125));
+        middlePanel.add(createButton("Twist", "twist", 125, 30, 540, 125));
 
         //Add the Dewist Button
-        panel.add(createButton("Enttwisten", "detwist", 125, 30, 540, 225));
+        middlePanel.add(createButton("Enttwisten", "detwist", 125, 30, 540, 225));
 
-        //Show the GUI
-        this.show();
+        //Create the InputArea which contains the Text to detwist
+        outputArea = createTextArea(475, 500, 500, 35);
+        scrollPaneRight = new JScrollPane(outputArea);
+        rightPanel.add(scrollPaneRight);
+
+        //Add the three Columns to the Main Panel
+        mainPanel.add(leftPanel);
+        mainPanel.add(middlePanel);
+        mainPanel.add(rightPanel);
+
+        //Add the main Panel to the ContentPane
+        this.getContentPane().add(mainPanel);
+
+        //Set the Visible of  the GUI
+        this.setVisible(true);
     }
 
     /**
@@ -99,13 +110,15 @@ public class TwistGUI extends JFrame implements ActionListener {
      * @param command which will be registered
      * @return the {@link JMenuItem}
      */
-    private JMenuItem addMenuItem(String title, String command) {
+    private JMenuItem addMenuItem(String title, String command, char shortcut) {
         JMenuItem menuItem = new JMenuItem(title);
 
         //Set the command for this Item
         menuItem.setActionCommand(command);
 
         menuItem.addActionListener(this);
+
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(shortcut, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
         return menuItem;
     }
@@ -122,12 +135,11 @@ public class TwistGUI extends JFrame implements ActionListener {
     private JTextArea createTextArea(int width, int height, int locX, int locY) {
         JTextArea textArea = new JTextArea();
         textArea.setSize(width, height);
-        textArea.setLocation(locX, locY);
+        //textArea.setLocation(locX, locY);
         textArea.setLineWrap(true);
         textArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        //textArea.setAutoscrolls(true);
-        textArea.setRows(150);
-
+        textArea.setAutoscrolls(true);
+        textArea.setRows(34);
         return textArea;
     }
 
@@ -148,6 +160,7 @@ public class TwistGUI extends JFrame implements ActionListener {
         button.setLocation(locX, locY);
         button.setActionCommand(command);
         button.addActionListener(this);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
         return button;
     }
 
@@ -165,6 +178,7 @@ public class TwistGUI extends JFrame implements ActionListener {
         JLabel label = new JLabel(text);
         label.setSize(width, height);
         label.setLocation(locX, locY);
+        //label.setAlignmentY(Component.TOP_ALIGNMENT);
         return label;
     }
 
@@ -241,7 +255,16 @@ public class TwistGUI extends JFrame implements ActionListener {
             //Detwist was chosen
             case "detwist":
                 //Clear the input Area
+
                 inputArea.setText("");
+
+                output.add(outputArea.getText());
+
+                for (String current : output) {
+                    inputArea.setText(inputArea.getText() + current + "\n");
+                }
+
+                outputArea.setText("");
 
                 //Endtwist the Text with the Data from the OutputArea
                 //output = twistText.endTwist(data);
@@ -249,7 +272,7 @@ public class TwistGUI extends JFrame implements ActionListener {
 
                 //Output the endtwisted Text in the InputArea
                 for (String current : output) {
-                    inputArea.setText(inputArea.getText() + current + "\n");
+                    outputArea.setText(outputArea.getText() + current + "\n");
                 }
                 break;
         }

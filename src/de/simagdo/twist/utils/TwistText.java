@@ -40,11 +40,11 @@ public class TwistText {
                 //Prepare the Text
                 textMatch = prepareText(part);
 
-                //Set the origin text
-                textMatch.setOriginalText(textMatch.getFirstLetter() + textMatch.getBetween() + textMatch.getLastLetter());
-
                 //Set the between Part
                 textMatch.setBetween(part.substring((textMatch.getFirstDigits().length() + textMatch.getFirstLetter().length()), (part.length() - (textMatch.getLastLetter().length() + textMatch.getLastDigits().length()))));
+
+                //Set the origin text
+                textMatch.setOriginalText(textMatch.getFirstLetter() + textMatch.getBetween() + textMatch.getLastLetter());
 
                 //Check which mode is currently active
                 if (mode.equals(TwistMode.TWIST) && part.length() > 3) {
